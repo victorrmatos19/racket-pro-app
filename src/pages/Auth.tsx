@@ -59,24 +59,15 @@ const Auth = () => {
         {/* Logo/Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center mb-4">
-            <img 
-              src={logo} 
-              alt="TennisCoach Pro" 
-              className="h-24 w-24 rounded-full object-cover shadow-xl"
-            />
+            <img src={logo} alt="TennisCoach Pro" className="h-24 w-24 rounded-full object-cover shadow-xl" />
           </div>
-          <p className="text-muted-foreground">
-            Faça login para acessar o dashboard
-          </p>
         </div>
 
         {/* Auth Card */}
         <Card className="border-border/50 shadow-lg">
           <CardHeader>
-            <CardTitle>Autenticação</CardTitle>
-            <CardDescription>
-              Entre com sua conta ou crie uma nova
-            </CardDescription>
+            <CardTitle>Login</CardTitle>
+            <CardDescription>Entre com sua conta ou crie uma nova</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="w-full">
@@ -95,9 +86,7 @@ const Auth = () => {
                       type="email"
                       placeholder="seu@email.com"
                       value={loginData.email}
-                      onChange={(e) =>
-                        setLoginData({ ...loginData, email: e.target.value })
-                      }
+                      onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                       required
                     />
                   </div>
@@ -108,17 +97,11 @@ const Auth = () => {
                       type="password"
                       placeholder="••••••••"
                       value={loginData.password}
-                      onChange={(e) =>
-                        setLoginData({ ...loginData, password: e.target.value })
-                      }
+                      onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                       required
                     />
                   </div>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading}
-                  >
+                  <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Entrando..." : "Entrar"}
                   </Button>
                 </form>
@@ -134,9 +117,7 @@ const Auth = () => {
                       type="text"
                       placeholder="Seu nome"
                       value={signupData.fullName}
-                      onChange={(e) =>
-                        setSignupData({ ...signupData, fullName: e.target.value })
-                      }
+                      onChange={(e) => setSignupData({ ...signupData, fullName: e.target.value })}
                       required
                     />
                   </div>
@@ -147,9 +128,7 @@ const Auth = () => {
                       type="email"
                       placeholder="seu@email.com"
                       value={signupData.email}
-                      onChange={(e) =>
-                        setSignupData({ ...signupData, email: e.target.value })
-                      }
+                      onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
                       required
                     />
                   </div>
@@ -160,18 +139,12 @@ const Auth = () => {
                       type="password"
                       placeholder="••••••••"
                       value={signupData.password}
-                      onChange={(e) =>
-                        setSignupData({ ...signupData, password: e.target.value })
-                      }
+                      onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                       required
                       minLength={6}
                     />
                   </div>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading}
-                  >
+                  <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Criando conta..." : "Criar conta"}
                   </Button>
                 </form>
