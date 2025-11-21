@@ -6,11 +6,21 @@ import { Users, TrendingUp, Calendar, Award } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const Index = () => {
   const { toast } = useToast();
   const [students, setStudents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const studentsPerPage = 10;
 
   const fetchStudents = async () => {
     try {
@@ -41,6 +51,17 @@ const Index = () => {
     : 0;
 
   const activeStudents = students.filter((s) => s.status === "active").length;
+
+  // Pagination calculations
+  const totalPages = Math.ceil(students.length / studentsPerPage);
+  const indexOfLastStudent = currentPage * studentsPerPage;
+  const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
+  const currentStudents = students.slice(indexOfFirstStudent, indexOfLastStudent);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const stats = [
     {
@@ -105,29 +126,63 @@ const Index = () => {
               <p className="text-sm">Clique em "Adicionar Aluno" para começar</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {students.map((student) => (
-                <StudentCard
-                  key={student.id}
-                  id={student.id}
-                  name={student.name}
-                  level={student.level}
-                  progress={student.progress}
-                  classDays={student.class_days || []}
-                  classTime={student.class_time || ""}
-                  status={student.status}
-                  monthlyFee={student.monthly_fee}
-                  onDelete={fetchStudents}
-                  forehandProgress={student.forehand_progress}
-                  backhandProgress={student.backhand_progress}
-                  serveProgress={student.serve_progress}
-                  volleyProgress={student.volley_progress}
-                  sliceProgress={student.slice_progress}
-                  physicalProgress={student.physical_progress}
-                  tacticalProgress={student.tactical_progress}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {currentStudents.map((student) => (
+                  <StudentCard
+                    key={student.id}
+                    id={student.id}
+                    name={student.name}
+                    level={student.level}
+                    progress={student.progress}
+                    classDays={student.class_days || []}
+                    classTime={student.class_time || ""}
+                    status={student.status}
+                    monthlyFee={student.monthly_fee}
+                    onDelete={fetchStudents}
+                    forehandProgress={student.forehand_progress}
+                    backhandProgress={student.backhand_progress}
+                    serveProgress={student.serve_progress}
+                    volleyProgress={student.volley_progress}
+                    sliceProgress={student.slice_progress}
+                    physicalProgress={student.physical_progress}
+                    tacticalProgress={student.tactical_progress}
+                  />
+                ))}
+              </div>
+              
+              {totalPages > 1 && (
+                <Pagination className="mt-8">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                    
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => handlePageChange(page)}
+                          isActive={currentPage === page}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </>
           )}
         </div>
       </main>
