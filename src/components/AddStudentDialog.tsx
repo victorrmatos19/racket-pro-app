@@ -114,13 +114,19 @@ export const AddStudentDialog = ({ onStudentAdded }: { onStudentAdded: () => voi
             </div>
             <div className="grid gap-2">
               <Label htmlFor="level">Nível</Label>
-              <Input
-                id="level"
+              <Select
                 value={formData.level}
-                onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                placeholder="Ex: Iniciante, Intermediário"
-                required
-              />
+                onValueChange={(value) => setFormData({ ...formData, level: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o nível" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Iniciante">Iniciante</SelectItem>
+                  <SelectItem value="Intermediário">Intermediário</SelectItem>
+                  <SelectItem value="Avançado">Avançado</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="progress">Progresso (%)</Label>
