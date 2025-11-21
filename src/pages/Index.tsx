@@ -109,12 +109,14 @@ const Index = () => {
               {students.map((student) => (
                 <StudentCard
                   key={student.id}
+                  id={student.id}
                   name={student.name}
                   level={student.level}
                   progress={student.progress}
                   classDays={student.class_days || []}
                   classTime={student.class_time || ""}
                   status={student.status}
+                  onDelete={fetchStudents}
                 />
               ))}
             </div>

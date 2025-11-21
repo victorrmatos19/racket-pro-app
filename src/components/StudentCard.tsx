@@ -1,15 +1,32 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Calendar, TrendingUp, Trophy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Calendar, TrendingUp, Trophy, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface StudentCardProps {
+  id: string;
   name: string;
   level: string;
   progress: number;
   classDays: string[];
   classTime: string;
   status: "active" | "inactive" | "improving" | "pending";
+  onDelete?: () => void;
 }
 
 const DAYS_MAP: Record<string, string> = {
@@ -29,15 +46,41 @@ const statusConfig = {
   pending: { label: "Pendente", variant: "secondary" as const },
 };
 
-export const StudentCard = ({ name, level, progress, classDays, classTime, status }: StudentCardProps) => {
+export const StudentCard = ({ id, name, level, progress, classDays, classTime, status, onDelete }: StudentCardProps) => {
   const statusInfo = statusConfig[status];
   const daysLabel = classDays.map((day) => DAYS_MAP[day] || day).join(", ");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { toast } = useToast();
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase.from("students").delete().eq("id", id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Aluno excluído",
+        description: "O aluno foi removido com sucesso",
+      });
+
+      onDelete?.();
+    } catch (error: any) {
+      toast({
+        title: "Erro ao excluir aluno",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50">
       <CardHeader>
         <div className="flex items-start justify-between">
-          <div className="space-y-1">
+          <div className="space-y-1 flex-1">
             <CardTitle className="text-xl font-semibold text-card-foreground group-hover:text-primary transition-colors">
               {name}
             </CardTitle>
@@ -46,9 +89,41 @@ export const StudentCard = ({ name, level, progress, classDays, classTime, statu
               <span>{level}</span>
             </div>
           </div>
-          <Badge variant={statusInfo.variant} className="font-medium">
-            {statusInfo.label}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant={statusInfo.variant} className="font-medium">
+              {statusInfo.label}
+            </Badge>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tem certeza que deseja excluir o aluno <strong>{name}</strong>? 
+                    Esta ação não pode ser desfeita.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
