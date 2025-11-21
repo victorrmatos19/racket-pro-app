@@ -23,11 +23,7 @@ export const Header = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (user) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
+        const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
         setProfile(data);
       }
     };
@@ -35,7 +31,7 @@ export const Header = () => {
   }, [user]);
 
   const navItems = [
-    { path: "/", label: "Dashboard", icon: LayoutDashboard },
+    { path: "/", label: "Alunos", icon: LayoutDashboard },
     { path: "/schedule", label: "Cronograma", icon: Calendar },
     { path: "/financial", label: "Financeiro", icon: DollarSign },
   ];
@@ -46,11 +42,7 @@ export const Header = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-3">
-              <img 
-                src={logo} 
-                alt="TennisCoach Pro" 
-                className="h-16 w-16 rounded-full object-cover shadow-md"
-              />
+              <img src={logo} alt="TennisCoach Pro" className="h-16 w-16 rounded-full object-cover shadow-md" />
               <p className="text-muted-foreground text-sm hidden sm:block">
                 Gerencie seus alunos e acompanhe a evolução
               </p>
@@ -64,10 +56,7 @@ export const Header = () => {
                     <Button
                       variant={isActive ? "default" : "ghost"}
                       size="sm"
-                      className={cn(
-                        "gap-2",
-                        isActive && "shadow-sm"
-                      )}
+                      className={cn("gap-2", isActive && "shadow-sm")}
                     >
                       <Icon className="w-4 h-4" />
                       {item.label}
@@ -130,10 +119,7 @@ export const Header = () => {
                 <Button
                   variant={isActive ? "default" : "ghost"}
                   size="sm"
-                  className={cn(
-                    "gap-2 w-full",
-                    isActive && "shadow-sm"
-                  )}
+                  className={cn("gap-2 w-full", isActive && "shadow-sm")}
                 >
                   <Icon className="w-4 h-4" />
                   {item.label}
