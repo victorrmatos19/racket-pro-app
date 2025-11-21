@@ -2,32 +2,83 @@ import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { DollarSign, Users, TrendingUp } from "lucide-react";
+import { DollarSign, Users, TrendingUp, AlertCircle, Pencil, Trash2 } from "lucide-react";
 import { Database } from "@/integrations/supabase/types";
+import { AddExpenseDialog } from "@/components/AddExpenseDialog";
+import { EditExpenseDialog } from "@/components/EditExpenseDialog";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type Student = Database["public"]["Tables"]["students"]["Row"];
+type Expense = Database["public"]["Tables"]["expenses"]["Row"];
 
 const Financial = () => {
   const [students, setStudents] = useState<Student[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
-    fetchStudents();
+    fetchData();
   }, []);
 
-  const fetchStudents = async () => {
+  const fetchData = async () => {
     try {
-      const { data, error } = await supabase
-        .from("students")
-        .select("*")
-        .order("name");
+      const [studentsResult, expensesResult] = await Promise.all([
+        supabase.from("students").select("*").order("name"),
+        supabase.from("expenses").select("*").order("expense_date", { ascending: false }),
+      ]);
 
-      if (error) throw error;
-      setStudents(data || []);
+      if (studentsResult.error) throw studentsResult.error;
+      if (expensesResult.error) throw expensesResult.error;
+
+      setStudents(studentsResult.data || []);
+      setExpenses(expensesResult.data || []);
     } catch (error) {
-      console.error("Erro ao carregar alunos:", error);
+      console.error("Erro ao carregar dados:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteExpense = async () => {
+    if (!deletingExpenseId) return;
+
+    try {
+      const { error } = await supabase
+        .from("expenses")
+        .delete()
+        .eq("id", deletingExpenseId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: "Despesa excluída com sucesso!",
+      });
+
+      fetchData();
+    } catch (error) {
+      console.error("Erro ao excluir despesa:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir despesa",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingExpenseId(null);
     }
   };
 
@@ -36,6 +87,11 @@ const Financial = () => {
     const fee = typeof student.monthly_fee === 'number' ? student.monthly_fee : 0;
     return sum + fee;
   }, 0);
+  const totalExpenses = expenses.reduce((sum, expense) => {
+    const amount = typeof expense.amount === 'number' ? expense.amount : 0;
+    return sum + amount;
+  }, 0);
+  const netProfit = totalRevenue - totalExpenses;
   const averageRevenue = activeStudents.length > 0 ? totalRevenue / activeStudents.length : 0;
 
   return (
@@ -51,7 +107,7 @@ const Financial = () => {
           <div className="text-center py-8">Carregando...</div>
         ) : (
           <>
-            <div className="grid gap-6 md:grid-cols-3 mb-8">
+            <div className="grid gap-6 md:grid-cols-4 mb-8">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Faturamento Mensal</CardTitle>
@@ -100,13 +156,50 @@ const Financial = () => {
                   </p>
                 </CardContent>
               </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Despesas Totais</CardTitle>
+                  <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-destructive">
+                    {new Intl.NumberFormat('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL'
+                    }).format(totalExpenses)}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    No período
+                  </p>
+                </CardContent>
+              </Card>
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Detalhamento por Aluno</CardTitle>
-                <CardDescription>Valores mensais de cada aluno ativo</CardDescription>
+            <Card className="mb-8">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-lg font-medium">Lucro Líquido</CardTitle>
+                <TrendingUp className="h-5 w-5 text-muted-foreground" />
               </CardHeader>
+              <CardContent>
+                <div className={`text-3xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                  {new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                  }).format(netProfit)}
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Faturamento - Despesas
+                </p>
+              </CardContent>
+            </Card>
+
+            <div className="grid gap-6 md:grid-cols-2 mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Detalhamento por Aluno</CardTitle>
+                  <CardDescription>Valores mensais de cada aluno ativo</CardDescription>
+                </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {activeStudents.length === 0 ? (
@@ -140,6 +233,94 @@ const Financial = () => {
                 </div>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Despesas</CardTitle>
+                  <CardDescription>Controle de despesas mensais</CardDescription>
+                </div>
+                <AddExpenseDialog onExpenseAdded={fetchData} />
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {expenses.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      Nenhuma despesa cadastrada
+                    </p>
+                  ) : (
+                    <div className="divide-y">
+                      {expenses.map((expense) => {
+                        const amount = typeof expense.amount === 'number' ? expense.amount : 0;
+                        return (
+                          <div key={expense.id} className="flex items-center justify-between py-4">
+                            <div className="flex-1">
+                              <p className="font-medium">{expense.description}</p>
+                              <div className="flex gap-2 text-sm text-muted-foreground">
+                                {expense.category && <span>{expense.category}</span>}
+                                <span>•</span>
+                                <span>{new Date(expense.expense_date).toLocaleDateString('pt-BR')}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <p className="font-semibold text-destructive">
+                                {new Intl.NumberFormat('pt-BR', {
+                                  style: 'currency',
+                                  currency: 'BRL'
+                                }).format(amount)}
+                              </p>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => setEditingExpense(expense)}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => setDeletingExpenseId(expense.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            </div>
+
+            {editingExpense && (
+              <EditExpenseDialog
+                expense={editingExpense}
+                open={!!editingExpense}
+                onOpenChange={(open) => !open && setEditingExpense(null)}
+                onExpenseUpdated={fetchData}
+              />
+            )}
+
+            <AlertDialog open={!!deletingExpenseId} onOpenChange={(open) => !open && setDeletingExpenseId(null)}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir despesa?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta ação não pode ser desfeita. A despesa será permanentemente removida.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteExpense}>
+                    Excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </>
         )}
       </main>
