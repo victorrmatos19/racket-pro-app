@@ -40,33 +40,36 @@ export type Database = {
       }
       students: {
         Row: {
+          class_days: string[] | null
+          class_time: string | null
           created_at: string
           id: string
           level: string
           name: string
-          next_class: string
           progress: number
           status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          class_days?: string[] | null
+          class_time?: string | null
           created_at?: string
           id?: string
           level: string
           name: string
-          next_class: string
           progress?: number
           status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          class_days?: string[] | null
+          class_time?: string | null
           created_at?: string
           id?: string
           level?: string
           name?: string
-          next_class?: string
           progress?: number
           status?: string
           updated_at?: string

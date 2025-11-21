@@ -142,7 +142,8 @@ const Index = () => {
                   name={student.name}
                   level={student.level}
                   progress={student.progress}
-                  nextClass={student.next_class}
+                  classDays={student.class_days || []}
+                  classTime={student.class_time || ""}
                   status={student.status}
                 />
               ))}
