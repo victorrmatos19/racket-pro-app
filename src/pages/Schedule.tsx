@@ -22,6 +22,7 @@ interface ClassSchedule {
   classes: {
     time: string;
     students: Student[];
+    confirmed: boolean;
   }[];
 }
 
@@ -86,7 +87,7 @@ const Schedule = () => {
         );
 
         if (!timeSlot) {
-          timeSlot = { time: student.class_time, students: [] };
+          timeSlot = { time: student.class_time, students: [], confirmed: true };
           daySchedule.classes.push(timeSlot);
         }
 
@@ -172,11 +173,23 @@ const Schedule = () => {
                       {day.classes.map((classSlot, idx) => (
                         <div
                           key={idx}
-                          className="border border-border/50 rounded-lg p-3 hover:shadow-md transition-shadow"
+                          className={`border rounded-lg p-3 hover:shadow-md transition-all ${
+                            classSlot.confirmed
+                              ? "border-primary/30 bg-primary/5"
+                              : "border-accent/30 bg-accent/5"
+                          }`}
                         >
-                          <div className="flex items-center gap-2 mb-2 text-sm font-medium">
-                            <Clock className="w-4 h-4 text-primary" />
-                            {classSlot.time}
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2 text-sm font-medium">
+                              <Clock className={`w-4 h-4 ${classSlot.confirmed ? "text-primary" : "text-accent"}`} />
+                              {classSlot.time}
+                            </div>
+                            <Badge 
+                              variant={classSlot.confirmed ? "default" : "secondary"}
+                              className={classSlot.confirmed ? "bg-primary text-primary-foreground" : "bg-accent text-accent-foreground"}
+                            >
+                              {classSlot.confirmed ? "Confirmada" : "Pendente"}
+                            </Badge>
                           </div>
                           <div className="space-y-2">
                             {classSlot.students.map((student) => (
