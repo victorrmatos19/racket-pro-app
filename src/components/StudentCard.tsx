@@ -17,6 +17,7 @@ import { Calendar, TrendingUp, Trophy, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { EditStudentDialog } from "./EditStudentDialog";
 
 interface StudentCardProps {
   id: string;
@@ -136,6 +137,28 @@ export const StudentCard = ({
             <Badge variant={statusInfo.variant} className="font-medium">
               {statusInfo.label}
             </Badge>
+            <EditStudentDialog
+              student={{
+                id,
+                name,
+                level,
+                status,
+                class_days: classDays,
+                class_time: classTime,
+                forehand_progress: forehandProgress,
+                backhand_progress: backhandProgress,
+                serve_progress: serveProgress,
+                volley_progress: volleyProgress,
+                slice_progress: sliceProgress,
+                physical_progress: physicalProgress,
+                tactical_progress: tacticalProgress,
+                user_id: "",
+                progress,
+                created_at: "",
+                updated_at: "",
+              }}
+              onStudentUpdated={onDelete || (() => {})}
+            />
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
