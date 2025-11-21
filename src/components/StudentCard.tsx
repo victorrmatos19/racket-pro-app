@@ -7,18 +7,31 @@ interface StudentCardProps {
   name: string;
   level: string;
   progress: number;
-  nextClass: string;
-  status: "active" | "inactive" | "improving";
+  classDays: string[];
+  classTime: string;
+  status: "active" | "inactive" | "improving" | "pending";
 }
+
+const DAYS_MAP: Record<string, string> = {
+  segunda: "Seg",
+  terca: "Ter",
+  quarta: "Qua",
+  quinta: "Qui",
+  sexta: "Sex",
+  sabado: "Sáb",
+  domingo: "Dom",
+};
 
 const statusConfig = {
   active: { label: "Ativo", variant: "default" as const },
   inactive: { label: "Inativo", variant: "secondary" as const },
   improving: { label: "Evoluindo", variant: "default" as const },
+  pending: { label: "Pendente", variant: "secondary" as const },
 };
 
-export const StudentCard = ({ name, level, progress, nextClass, status }: StudentCardProps) => {
+export const StudentCard = ({ name, level, progress, classDays, classTime, status }: StudentCardProps) => {
   const statusInfo = statusConfig[status];
+  const daysLabel = classDays.map((day) => DAYS_MAP[day] || day).join(", ");
 
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50">
@@ -51,7 +64,16 @@ export const StudentCard = ({ name, level, progress, nextClass, status }: Studen
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t border-border/50">
           <Calendar className="w-4 h-4" />
-          <span>Próxima aula: {nextClass}</span>
+          <div className="flex flex-col gap-1">
+            {classDays.length > 0 ? (
+              <>
+                <span className="font-medium">{daysLabel}</span>
+                <span>{classTime}</span>
+              </>
+            ) : (
+              <span>Sem aulas agendadas</span>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -18,9 +18,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus } from "lucide-react";
+
+const WEEK_DAYS = [
+  { id: "segunda", label: "Segunda" },
+  { id: "terca", label: "Terça" },
+  { id: "quarta", label: "Quarta" },
+  { id: "quinta", label: "Quinta" },
+  { id: "sexta", label: "Sexta" },
+  { id: "sabado", label: "Sábado" },
+  { id: "domingo", label: "Domingo" },
+];
 
 export const AddStudentDialog = ({ onStudentAdded }: { onStudentAdded: () => void }) => {
   const [open, setOpen] = useState(false);
@@ -29,7 +40,8 @@ export const AddStudentDialog = ({ onStudentAdded }: { onStudentAdded: () => voi
     name: "",
     level: "",
     progress: "0",
-    nextClass: "",
+    classDays: [] as string[],
+    classTime: "",
     status: "active",
   });
   const { toast } = useToast();
@@ -55,7 +67,8 @@ export const AddStudentDialog = ({ onStudentAdded }: { onStudentAdded: () => voi
         name: formData.name,
         level: formData.level,
         progress: parseInt(formData.progress),
-        next_class: formData.nextClass,
+        class_days: formData.classDays,
+        class_time: formData.classTime,
         status: formData.status,
       });
 
@@ -70,7 +83,8 @@ export const AddStudentDialog = ({ onStudentAdded }: { onStudentAdded: () => voi
         name: "",
         level: "",
         progress: "0",
-        nextClass: "",
+        classDays: [],
+        classTime: "",
         status: "active",
       });
       setOpen(false);
@@ -141,12 +155,41 @@ export const AddStudentDialog = ({ onStudentAdded }: { onStudentAdded: () => voi
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="nextClass">Próxima Aula</Label>
+              <Label>Dias das Aulas</Label>
+              <div className="grid grid-cols-2 gap-3">
+                {WEEK_DAYS.map((day) => (
+                  <div key={day.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={day.id}
+                      checked={formData.classDays.includes(day.id)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setFormData({
+                            ...formData,
+                            classDays: [...formData.classDays, day.id],
+                          });
+                        } else {
+                          setFormData({
+                            ...formData,
+                            classDays: formData.classDays.filter((d) => d !== day.id),
+                          });
+                        }
+                      }}
+                    />
+                    <Label htmlFor={day.id} className="cursor-pointer font-normal">
+                      {day.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="classTime">Horário das Aulas</Label>
               <Input
-                id="nextClass"
-                value={formData.nextClass}
-                onChange={(e) => setFormData({ ...formData, nextClass: e.target.value })}
-                placeholder="Ex: Segunda, 14:00"
+                id="classTime"
+                type="time"
+                value={formData.classTime}
+                onChange={(e) => setFormData({ ...formData, classTime: e.target.value })}
                 required
               />
             </div>
