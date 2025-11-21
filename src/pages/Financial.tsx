@@ -288,94 +288,6 @@ const Financial = () => {
               </Card>
             </div>
 
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>Evolução Anual</CardTitle>
-                <CardDescription>Comparativo mensal de faturamento, despesas e lucro líquido</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={monthlyData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="month" 
-                      style={{ fontSize: '12px' }}
-                    />
-                    <YAxis 
-                      style={{ fontSize: '12px' }}
-                      tickFormatter={(value) => 
-                        new Intl.NumberFormat('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        }).format(value)
-                      }
-                    />
-                    <Tooltip 
-                      formatter={(value: number) =>
-                        new Intl.NumberFormat('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL'
-                        }).format(value)
-                      }
-                    />
-                    <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="faturamento" 
-                      stroke="hsl(var(--primary))" 
-                      strokeWidth={2}
-                      name="Faturamento"
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="despesas" 
-                      stroke="hsl(var(--destructive))" 
-                      strokeWidth={2}
-                      name="Despesas"
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="lucro" 
-                      stroke="#10b981" 
-                      strokeWidth={2}
-                      name="Lucro Líquido"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-                <div className="mt-6 pt-4 border-t grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Total Faturamento</p>
-                    <p className="text-lg font-semibold text-primary">
-                      {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL'
-                      }).format(totalAnualFaturamento)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Total Despesas</p>
-                    <p className="text-lg font-semibold text-destructive">
-                      {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL'
-                      }).format(totalAnualDespesas)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Total Lucro Líquido</p>
-                    <p className={`text-lg font-semibold ${totalAnualLucro >= 0 ? 'text-green-600' : 'text-destructive'}`}>
-                      {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL'
-                      }).format(totalAnualLucro)}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
             <div className="grid gap-6 md:grid-cols-2 mb-8">
               <Card>
                 <CardHeader>
@@ -477,6 +389,94 @@ const Financial = () => {
               </CardContent>
             </Card>
             </div>
+
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle>Evolução Anual</CardTitle>
+                <CardDescription>Comparativo mensal de faturamento, despesas e lucro líquido</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={monthlyData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="month" 
+                      style={{ fontSize: '12px' }}
+                    />
+                    <YAxis 
+                      style={{ fontSize: '12px' }}
+                      tickFormatter={(value) => 
+                        new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        }).format(value)
+                      }
+                    />
+                    <Tooltip 
+                      formatter={(value: number) =>
+                        new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL'
+                        }).format(value)
+                      }
+                    />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="faturamento" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={2}
+                      name="Faturamento"
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="despesas" 
+                      stroke="hsl(var(--destructive))" 
+                      strokeWidth={2}
+                      name="Despesas"
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="lucro" 
+                      stroke="#10b981" 
+                      strokeWidth={2}
+                      name="Lucro Líquido"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+                <div className="mt-6 pt-4 border-t grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Total Faturamento</p>
+                    <p className="text-lg font-semibold text-primary">
+                      {new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                      }).format(totalAnualFaturamento)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Total Despesas</p>
+                    <p className="text-lg font-semibold text-destructive">
+                      {new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                      }).format(totalAnualDespesas)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Total Lucro Líquido</p>
+                    <p className={`text-lg font-semibold ${totalAnualLucro >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                      {new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                      }).format(totalAnualLucro)}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {editingExpense && (
               <EditExpenseDialog
