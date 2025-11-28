@@ -13,11 +13,7 @@ import { Edit, CalendarIcon } from "lucide-react";
 import { format, parse } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type Student = Database["public"]["Tables"]["students"]["Row"];
 
@@ -35,7 +31,7 @@ const TENNIS_SKILLS = [
   { key: "forehand_progress", label: "Forehand", icon: "🎾" },
   { key: "backhand_progress", label: "Backhand", icon: "🎾" },
   { key: "serve_progress", label: "Saque", icon: "🏐" },
-  { key: "volley_progress", label: "Vôlei", icon: "🏐" },
+  { key: "volley_progress", label: "Voleio", icon: "🏐" },
   { key: "slice_progress", label: "Slice", icon: "🎾" },
   { key: "physical_progress", label: "Físico", icon: "💪" },
   { key: "tactical_progress", label: "Tático", icon: "🧠" },
@@ -54,7 +50,7 @@ export function EditStudentDialog({ student, onStudentUpdated }: EditStudentDial
     status: student.status,
     class_days: student.class_days || [],
     class_time: student.class_time || "",
-    class_start_date: student.class_start_date ? parse(student.class_start_date, 'yyyy-MM-dd', new Date()) : new Date(),
+    class_start_date: student.class_start_date ? parse(student.class_start_date, "yyyy-MM-dd", new Date()) : new Date(),
     monthly_fee: student.monthly_fee?.toString() || "",
     forehand_progress: student.forehand_progress,
     backhand_progress: student.backhand_progress,
@@ -73,7 +69,9 @@ export function EditStudentDialog({ student, onStudentUpdated }: EditStudentDial
         status: student.status,
         class_days: student.class_days || [],
         class_time: student.class_time || "",
-        class_start_date: student.class_start_date ? parse(student.class_start_date, 'yyyy-MM-dd', new Date()) : new Date(),
+        class_start_date: student.class_start_date
+          ? parse(student.class_start_date, "yyyy-MM-dd", new Date())
+          : new Date(),
         monthly_fee: student.monthly_fee?.toString() || "",
         forehand_progress: student.forehand_progress,
         backhand_progress: student.backhand_progress,
@@ -98,7 +96,7 @@ export function EditStudentDialog({ student, onStudentUpdated }: EditStudentDial
           status: formData.status,
           class_days: formData.class_days,
           class_time: formData.class_time,
-          class_start_date: format(formData.class_start_date, 'yyyy-MM-dd'),
+          class_start_date: format(formData.class_start_date, "yyyy-MM-dd"),
           monthly_fee: parseFloat(formData.monthly_fee) || 0,
           forehand_progress: formData.forehand_progress,
           backhand_progress: formData.backhand_progress,
@@ -239,11 +237,15 @@ export function EditStudentDialog({ student, onStudentUpdated }: EditStudentDial
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal",
-                      !formData.class_start_date && "text-muted-foreground"
+                      !formData.class_start_date && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.class_start_date ? format(formData.class_start_date, "dd/MM/yyyy") : <span>Selecione a data</span>}
+                    {formData.class_start_date ? (
+                      format(formData.class_start_date, "dd/MM/yyyy")
+                    ) : (
+                      <span>Selecione a data</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -268,9 +270,7 @@ export function EditStudentDialog({ student, onStudentUpdated }: EditStudentDial
                       <Label className="text-sm">
                         {skill.icon} {skill.label}
                       </Label>
-                      <span className="text-sm text-muted-foreground">
-                        {progressValue}%
-                      </span>
+                      <span className="text-sm text-muted-foreground">{progressValue}%</span>
                     </div>
                     <Slider
                       value={[progressValue]}

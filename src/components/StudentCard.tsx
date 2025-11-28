@@ -59,20 +59,20 @@ const TENNIS_SKILLS = [
   { id: "forehand", label: "Forehand", key: "forehandProgress" },
   { id: "backhand", label: "Backhand", key: "backhandProgress" },
   { id: "serve", label: "Saque", key: "serveProgress" },
-  { id: "volley", label: "Vôlei", key: "volleyProgress" },
+  { id: "volley", label: "Voleio", key: "volleyProgress" },
   { id: "slice", label: "Slice", key: "sliceProgress" },
   { id: "physical", label: "Físico", key: "physicalProgress" },
   { id: "tactical", label: "Tático", key: "tacticalProgress" },
 ];
 
-export const StudentCard = ({ 
-  id, 
-  name, 
-  level, 
-  progress, 
-  classDays, 
-  classTime, 
-  status, 
+export const StudentCard = ({
+  id,
+  name,
+  level,
+  progress,
+  classDays,
+  classTime,
+  status,
   monthlyFee = 0,
   onDelete,
   forehandProgress = 0,
@@ -147,7 +147,7 @@ export const StudentCard = ({
                 status,
                 class_days: classDays,
                 class_time: classTime,
-                class_start_date: new Date().toISOString().split('T')[0],
+                class_start_date: new Date().toISOString().split("T")[0],
                 monthly_fee: monthlyFee,
                 forehand_progress: forehandProgress,
                 backhand_progress: backhandProgress,
@@ -178,8 +178,7 @@ export const StudentCard = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Tem certeza que deseja excluir o aluno <strong>{name}</strong>? 
-                    Esta ação não pode ser desfeita.
+                    Tem certeza que deseja excluir o aluno <strong>{name}</strong>? Esta ação não pode ser desfeita.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
